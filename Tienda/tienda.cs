@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Tienda;
 
 public class Tienda
@@ -14,7 +17,7 @@ public class Tienda
         Inventario.Add(producto);
     }
 
-    public Producto? BuscarProducto(string nombre)
+    public Producto BuscarProducto(string nombre)
     {
         foreach (Producto producto in Inventario)
         {
@@ -24,19 +27,24 @@ public class Tienda
             }
         }
 
-        return null;
+        throw new KeyNotFoundException($"Producto '{nombre}' no encontrado.");
     }
 
-    public bool EliminarProducto(string nombre)
+    public void EliminarProducto(string nombre)
     {
-        Producto? producto = BuscarProducto(nombre);
+        Producto producto = BuscarProducto(nombre);
+        Inventario.Remove(producto);
+    }
 
-        if (producto != null)
+    public void AplicarDescuento(string nombre, decimal porcentaje)
+    {
+        if (porcentaje < 0 || porcentaje > 100)
         {
-            Inventario.Remove(producto);
-            return true;
+            throw new ArgumentException("El porcentaje de descuento debe estar entre 0 y 100.");
         }
 
-        return false;
+        Producto producto = BuscarProducto(nombre);
+        decimal descuento = producto.Precio * (porcentaje / 100m);
+        producto.ActualizarPrecio(producto.Precio - descuento);
     }
 }
