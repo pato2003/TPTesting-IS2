@@ -2,6 +2,8 @@
 
 Abrí la terminal en la raíz del proyecto (donde está el archivo `TPTestingIS2.sln`) y usá los siguientes comandos para comprobar que cada punto del TP funcione correctamente.
 
+USAMOS .NET 9, asi que debera tener esa version instalada
+
 ---
 
 ## Ejecutar todos los tests juntos
