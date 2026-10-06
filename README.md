@@ -27,3 +27,23 @@ Dependiendo de qué tan complejos sean o para qué los usemos en el test, a los 
 - **Fake**: Es una implementación de verdad pero simplificada para testear rápido (por ejemplo, una base de datos "trucha" en memoria).
 - **Dummy**: Un objeto de relleno que se pasa como parámetro porque es obligatorio, pero que nunca se usa realmente.
 - **Spy**: Un envoltorio que guarda registro de cómo y cuándo llaman a la clase para después poder inspeccionarlo.
+
+### Punto 4
+**Defina usando palabras propias y según la práctica realizada qué es un fixture.**
+Un fixture es un conjunto de datos o un estado base conocido y predeterminado que preparamos para que los tests se ejecuten de manera consistente, repetible y controlada.
+En nuestra práctica con C# y xUnit, el fixture es la clase `TiendaFixture`, donde instanciamos la `Tienda` y le precargamos productos de prueba (`Raton`, `Teclado`). Al instanciar este fixture en el constructor de la clase de pruebas antes de cada test, evitamos repetir código de inicialización y aseguramos que cada prueba inicie desde un estado limpio y predecible.
+
+**¿Qué ventajas ve en el uso de fixtures? ¿Qué enfoque de diseño de pruebas estaríamos aplicando (caja negra/blanca)?**
+- **Ventajas:**
+  - **Evita la repetición de código (DRY)**: Centraliza la creación y configuración inicial de los objetos de prueba.
+  - **Mantenibilidad**: Si el día de mañana cambia el constructor de `Producto` o de `Tienda`, solo modificamos el fixture en un único lugar en vez de arreglar decenas de tests individuales.
+  - **Aislamiento e independencia entre tests**: Al instanciarse un fixture nuevo antes de cada prueba, aseguramos que ningún test sufra efectos secundarios o datos alterados por una prueba previa.
+  - **Claridad**: Los métodos de prueba quedan mucho más concisos, enfocándose directo en la acción (`Act`) y la aserción (`Assert`).
+- **Enfoque de diseño (caja negra / blanca):**
+  - Al diseñar las pruebas que consumen el fixture, nos basamos principalmente en la especificación funcional y en el contrato público de `Tienda` (ej. "si busco un producto existente por su nombre me debe retornar el producto", "si intento eliminar uno que no está debe lanzar una excepción"). Esto responde a un enfoque de **caja negra**, ya que evaluamos las entradas y salidas esperadas sin depender de la estructura interna.
+  - Si bien tenemos en cuenta las bifurcaciones y validaciones del código (como el control de nombres o el lanzamiento de excepciones) para diseñar casos que pasen por esos caminos, el enfoque aplicado es predominantemente de caja negra (la medición formal y sistemática de cobertura de código por caja blanca se abordará en el Punto 5).
+
+**Explique los conceptos de Setup y Teardown en testing.**
+- **Setup:** Es la fase de preparación previa a la ejecución de las pruebas para dejar todo en un estado limpio y predecible. En xUnit, a diferencia de otros frameworks que usan atributos como `[SetUp]`, el Setup por prueba se implementa de forma idiomática mediante el **constructor** de la clase de prueba, ya que xUnit crea una instancia nueva de la clase por cada test que ejecuta. En nuestro código, usamos el constructor como Setup para instanciar un `TiendaFixture` nuevo por cada prueba. La alternativa `IClassFixture` se reserva para recursos costosos compartidos por toda la clase de prueba (como una conexión a base de datos o un servidor web), pero no para fixtures de datos que deben aislarse por test.
+- **Teardown:** Es la fase de desmontaje o limpieza posterior a la ejecución de las pruebas para no dejar efectos residuales. En xUnit y .NET, el Teardown por prueba se realiza implementando la interfaz **`IDisposable`** y su método **`Dispose()`** (en nuestro caso, limpiando el inventario de la tienda al finalizar cada test).
+
