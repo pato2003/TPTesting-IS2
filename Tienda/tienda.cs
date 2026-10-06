@@ -47,4 +47,23 @@ public class Tienda
         decimal descuento = producto.Precio * (porcentaje / 100m);
         producto.ActualizarPrecio(producto.Precio - descuento);
     }
+
+    // El carrito se modela directamente como una List<string> con los nombres de los productos,
+    // evitando crear clases adicionales innecesarias y permitiendo representar cantidades mediante nombres repetidos.
+    public decimal CalcularTotalCarrito(List<string> carrito)
+    {
+        if (carrito == null)
+        {
+            throw new ArgumentNullException(nameof(carrito), "El carrito no puede ser nulo.");
+        }
+
+        decimal total = 0m;
+        foreach (string nombre in carrito)
+        {
+            Producto producto = BuscarProducto(nombre);
+            total += producto.Precio;
+        }
+
+        return total;
+    }
 }
